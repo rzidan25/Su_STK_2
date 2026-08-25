@@ -22,6 +22,8 @@ data_modeled[["scaled"]] |>
 
 # This function calculates log2 fold change values between the defined groups
 # The byChip argument lets you calculates the log2 fold change the results within each chip
+grep("krsa_group_diff", readLines("_comparison.Rmd"), value = TRUE)
+
 differential_phosphorylated_peptides <- krsa_group_diff(
   data_modeled[["scaled"]], c("{{case}}", "{{ctrl}}"), pep_passed_qc,
   byChip = TRUE

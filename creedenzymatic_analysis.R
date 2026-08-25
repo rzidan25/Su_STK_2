@@ -3,6 +3,25 @@
 library(tidyverse)
 library(creedenzymatic)
 
+
+library(tidyverse)
+library(creedenzymatic)
+
+data(
+  "kinome_mp_file",
+  package = "creedenzymatic",
+  envir = environment()
+)
+
+mapping_fixed <- kinome_mp_file |>
+  mutate(
+    krsa_id = if_else(
+      hgnc_symbol %in% c("MARK1", "MARK2", "MARK3", "MARK4"),
+      "MARK",
+      krsa_id
+    )
+  )
+
 process_creedenzymatic <- function(krsa_path, uka_path, peptide_path) {
   krsa_data <- read_csv(krsa_path, show_col_types = FALSE) |>
     select(Kinase, Score = AvgZ) |>
@@ -29,7 +48,8 @@ process_creedenzymatic <- function(krsa_path, uka_path, peptide_path) {
     KRSA_df = krsa_data,
     UKA_df = uka_data,
     KEA3_df = kea3_data,
-    PTM_SEA_df = ptmsea_data
+    PTM_SEA_df = ptmsea_data,
+    mapping_df = mapping_fixed
   )
 
   combined
@@ -59,4 +79,19 @@ result <- list(
       file.path("results", str_glue("{.y}_creedenzymatic.csv"))
     ),
     .id = "Comparison"
+  )
+########
+result |>
+  filter(
+    Kinase == "MARK" |
+      hgnc_symbol %in% c("MARK1", "MARK2", "MARK3", "MARK4")
+  ) |>
+  select(
+    Comparison,
+    Kinase,
+    hgnc_symbol,
+    Score,
+    Rank,
+    Qrt,
+    Method
   )

@@ -12,6 +12,13 @@ pep_passed_qc <- krsa_quick_filter(
   groups = c("{{case}}", "{{ctrl}}")
 )
 
+# ── NEW: drop barcodes that are missing either group for this comparison ──
+scaled_for_comp <- data_modeled[["scaled"]] |>
+  filter(Group %in% c("{{case}}", "{{ctrl}}")) |>
+  group_by(Barcode) |>
+  filter(n_distinct(Group) == 2) |>
+  ungroup()
+
 data_modeled[["scaled"]] |>
   filter(
     Peptide %in% pep_passed_qc,
@@ -26,11 +33,17 @@ data_modeled[["scaled"]] |>
 
 # This function calculates log2 fold change values between the defined groups
 # The byChip argument lets you calculates the log2 fold change the results within each chip
+# Drop barcodes missing either group before computing LFC
+scaled_for_comp <- data_modeled[["scaled"]] |>
+  filter(Group %in% c("{{case}}", "{{ctrl}}")) |>
+  group_by(Barcode) |>
+  filter(n_distinct(Group) == 2) |>
+  ungroup()
+
 differential_phosphorylated_peptides <- krsa_group_diff(
-  data_modeled[["scaled"]], c("{{case}}", "{{ctrl}}"), pep_passed_qc,
+  scaled_for_comp, c("{{case}}", "{{ctrl}}"), pep_passed_qc,
   byChip = TRUE
 )
-
 # save LFC table
 write_csv(
   differential_phosphorylated_peptides,

@@ -1,0 +1,6 @@
+result_file,n_peptides,raw_p_below_0.05,FDR_below_0.05
+ShHSFi-C_ShSr-C-STK,95,1,0
+ShHSFi-NPTX_ShHSFi-C-STK,95,0,0
+ShHSFi-NPTX_ShSr-C-STK,95,0,0
+ShHSFi-NPTX_ShSr-NPTX-STK,95,2,0
+ShSr-NPTX_ShSr-C-STK,95,1,0
