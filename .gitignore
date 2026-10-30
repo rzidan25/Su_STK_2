@@ -10,9 +10,6 @@
 # Ignore R user data files
 .Ruserdata
 
-# Ignore PDF files
-*.pdf
-
 # Ignore directories ending with _files
 *_files/
 

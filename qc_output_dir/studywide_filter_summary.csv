@@ -1,0 +1,3 @@
+Analysis,Maximum observed exposure,Low-signal endpoint,Total analytical peptides,Passed low-signal filter,Passed linearity filter,Passed all KRSA filters
+Observed through 100 ms,100 ms,Observed 100 ms,141,94,94,94
+Predicted 100 ms from observed exposures through 50 ms,50 ms,Predicted 100 ms,141,109,107,107

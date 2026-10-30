@@ -1,0 +1,7 @@
+qc_fail,failure_reason,Transitions
+FALSE,No flag,6585
+FALSE,Poor fit only; retained,99
+FALSE,Z-score only; retained,804
+TRUE,Absolute and adaptive criteria,23
+TRUE,Absolute delta criterion,61
+TRUE,Z-score and poor fit,51

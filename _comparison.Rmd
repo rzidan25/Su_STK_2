@@ -6,39 +6,36 @@
 # This function will run both QC steps (krsa_filter_lowPeps, krsa_filter_nonLinear) and krsa_filter_ref_pep
 
 figure_folder <- "{{figure_output}}"
-pep_passed_qc <- krsa_quick_filter(
-  data = data_pw_max, data2 = data_modeled[["scaled"]],
-  signal_threshold = 5L, r2_threshold = 0.8,
-  groups = c("{{case}}", "{{ctrl}}")
+# Use the final peptide list established by the parent QC pipeline.
+# Do not rerun KRSA filtering with hardcoded thresholds.
+
+pep_passed_qc <- unique(as.character(clean_peptides))
+
+stopifnot(
+  length(pep_passed_qc) > 0L,
+  all(pep_passed_qc %in% unique(as.character(data_modeled[["scaled"]]$Peptide)))
 )
 
 # ── NEW: drop barcodes that are missing either group for this comparison ──
 scaled_for_comp <- data_modeled[["scaled"]] |>
-  filter(Group %in% c("{{case}}", "{{ctrl}}")) |>
+  filter(
+    Group %in% c("{{case}}", "{{ctrl}}"),
+    Peptide %in% pep_passed_qc
+  ) |>
   group_by(Barcode) |>
-  filter(n_distinct(Group) == 2) |>
+  filter(n_distinct(Group) == 2L) |>
   ungroup()
 
-data_modeled[["scaled"]] |>
-  filter(
-    Peptide %in% pep_passed_qc,
-    Group %in% c("{{case}}", "{{ctrl}}")
-  ) |>
+# Export only peptides passing the previously established QC,
+# restricted to the two comparison groups and barcodes containing both groups.
+
+scaled_for_comp |>
   write_csv(
     file.path(
       "results",
       "{{run_prefix}}-signal_{{case}}_{{ctrl}}-{{chip}}.csv"
     )
   )
-
-# This function calculates log2 fold change values between the defined groups
-# The byChip argument lets you calculates the log2 fold change the results within each chip
-# Drop barcodes missing either group before computing LFC
-scaled_for_comp <- data_modeled[["scaled"]] |>
-  filter(Group %in% c("{{case}}", "{{ctrl}}")) |>
-  group_by(Barcode) |>
-  filter(n_distinct(Group) == 2) |>
-  ungroup()
 
 differential_phosphorylated_peptides <- krsa_group_diff(
   scaled_for_comp, c("{{case}}", "{{ctrl}}"), pep_passed_qc,
@@ -148,6 +145,9 @@ The lab carefully curated and mapped the kinases that can act and phosphorylate 
 #| label: krsa{{random}}
 
 # STK chip
+
+load('reference_data/KRSA_coverage_STK_PamChip_87202_v1.rda')
+load('reference_data/KRSA_Mapping_STK_PamChip_87202_v1.rda')
 
 if (params[["chip_type"]] == "STK") {
   chipCov <- KRSA_coverage_STK_PamChip_87102_v2

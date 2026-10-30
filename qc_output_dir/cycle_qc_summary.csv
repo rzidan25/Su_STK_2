@@ -1,0 +1,6 @@
+Metric,Value
+Evaluated cycle transitions,7623
+Failed transitions,135
+Failed peptide-cycle combinations,135
+Measurement rows removed,560
+Measurement rows retained,54545
